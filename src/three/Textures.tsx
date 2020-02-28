@@ -14,10 +14,16 @@ export function Textures() {
     []
   );
 
+  let offsets = [-2, -1, 0, 1, 2];
+
   return (
     <>
       {textures.map((texture, index) => (
-        <TextureComponent key={index} texture={texture} offset={index} />
+        <TextureComponent
+          key={index}
+          texture={texture}
+          offset={offsets[index]}
+        />
       ))}
     </>
   );
