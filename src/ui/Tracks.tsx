@@ -1,20 +1,13 @@
-import React, { Dispatch } from "react";
-import { AnimationLoader } from "three";
+import React, { Dispatch, useEffect } from "react";
+import { AnimationClip, AnimationLoader } from "three";
 import { Button, Col, Input, Row, Select } from "antd";
 import { Typography } from "antd";
 import produce from "immer";
+import { TRACK_TYPE } from "./TrackType";
+import { TrackOptions } from "./TrackOptions";
 
 let { Text } = Typography;
 let { Option } = Select;
-
-let TRACK_TYPES = {
-  NUMBER: "NUMBER",
-  VECTOR: "VECTOR",
-  COLOR: "COLOR",
-  QUATERNION: "QUATERNION",
-  BOOLEAN: "BOOLEAN",
-  STRING: "STRING"
-};
 
 let initial = {
   name: "Hello",
@@ -22,22 +15,15 @@ let initial = {
   tracks: [
     {
       id: 1,
-      name: "track1",
-      type: TRACK_TYPES.VECTOR,
+      name: ".scale",
+      type: TRACK_TYPE.VECTOR,
       times: [0, 1],
       values: [0, 0, 1, 1]
     }
   ]
 };
 
-export function Tracks() {
-  try {
-    let clips = new AnimationLoader().parse([initial]);
-    console.log(clips);
-  } catch (e) {
-    console.error(e);
-  }
-
+export function Tracks({ setClips }: TracksProps) {
   function findTrackById(tracks: ITrack[], id: number) {
     return tracks.find(track => track.id === id);
   }
@@ -51,8 +37,10 @@ export function Tracks() {
         let nextId = state.tracks.length + 1;
         state.tracks.push({
           name: `${nextId}`,
-          type: TRACK_TYPES.VECTOR,
-          id: nextId
+          type: TRACK_TYPE.VECTOR,
+          id: nextId,
+          times: [],
+          values: []
         });
         break;
       }
@@ -70,6 +58,17 @@ export function Tracks() {
   });
 
   let [state, dispatch] = React.useReducer(reducer, initial);
+
+  useEffect(() => {
+    try {
+      let clips = new AnimationLoader().parse([state]);
+      console.log(clips);
+      setClips(clips);
+    } catch (e) {
+      // console.error(e);
+      setClips([]);
+    }
+  }, [state]);
 
   let { name, tracks } = state;
 
@@ -100,6 +99,10 @@ export function Tracks() {
       </div>
     </div>
   );
+}
+
+interface TracksProps {
+  setClips: (clips: AnimationClip[]) => void;
 }
 
 function TrackList({ tracks, dispatch }: TrackListProps) {
@@ -137,28 +140,31 @@ function Track({ track, dispatch }: TrackProps) {
       <div>
         <div>TYPE</div>
         <Select
-          defaultValue={TRACK_TYPES.VECTOR}
+          defaultValue={TRACK_TYPE.VECTOR}
           value={type}
           style={{ width: "150px" }}
           onChange={value =>
             dispatch({ type: "track_type_change", nextType: value, id })
           }
         >
-          {Object.values(TRACK_TYPES).map(type => (
+          {Object.values(TRACK_TYPE).map(type => (
             <Option key={type} value={type}>
               {type}
             </Option>
           ))}
         </Select>
       </div>
+      <div>
+        <TrackOptions track={track} />
+      </div>
     </div>
   );
 }
 
-interface ITrack {
+export interface ITrack {
   id: number;
   name: string;
-  type: string;
+  type: keyof typeof TRACK_TYPE;
   times: number[];
   values: number[];
 }

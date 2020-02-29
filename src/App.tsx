@@ -1,12 +1,14 @@
 import React from "react";
+import { Col, Layout, Row, Typography } from "antd";
+import { AnimationClip } from "three";
 import { ThreeCanvas } from "./three/ThreeCanvas";
 import { Tracks } from "./ui/Tracks";
-import { Col, Layout, Row } from "antd";
-import { Typography } from "antd";
+
 let { Title } = Typography;
 let { Sider, Header, Content } = Layout;
 
 function App() {
+  let [clips, setClips] = React.useState<AnimationClip[]>([]);
   return (
     <Layout style={{ height: "100%" }}>
       <Header>
@@ -20,10 +22,10 @@ function App() {
       </Header>
       <Layout style={{ height: "100%" }}>
         <Sider width={350}>
-          <Tracks />
+          <Tracks setClips={setClips} />
         </Sider>
         <Content style={{ height: "100%" }}>
-          <ThreeCanvas />
+          <ThreeCanvas clips={clips} />
         </Content>
       </Layout>
     </Layout>
