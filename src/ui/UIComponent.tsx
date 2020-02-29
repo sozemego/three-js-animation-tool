@@ -1,13 +1,20 @@
 import React from "react";
-import { Drawer } from "@material-ui/core";
+import { Layout } from "antd";
 import { Tracks } from "./Tracks";
+import { ThreeCanvas } from "../three/ThreeCanvas";
+
+let { Sider, Header, Content } = Layout;
 
 export function UIComponent() {
   return (
-    <Drawer anchor={"left"} open={true} variant={"permanent"}>
-      <div style={{ width: "250px", padding: "8px" }}>
+    <Layout className={"layout"}>
+      <Sider>
         <Tracks />
-      </div>
-    </Drawer>
+      </Sider>
+      <Layout>
+        <Header>Anim tool</Header>
+        <Content>{/*<ThreeCanvas />*/}</Content>
+      </Layout>
+    </Layout>
   );
 }

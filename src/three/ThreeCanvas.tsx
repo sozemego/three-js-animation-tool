@@ -4,7 +4,7 @@ import { Textures } from "./Textures";
 
 export function ThreeCanvas() {
   return (
-    <Canvas style={{ background: "gray" }} camera={{ position: [0, 0, 15] }}>
+    <Canvas style={{ background: "white" }} camera={{ position: [0, 0, 15] }}>
       <ambientLight />
       <Textures />
     </Canvas>

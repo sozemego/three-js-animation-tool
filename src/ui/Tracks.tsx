@@ -19,7 +19,7 @@ export function Tracks() {
   let clips = new AnimationLoader().parse(json);
 
   return (
-    <div>
+    <div style={{ padding: "6px" }}>
       <div>TRACKS</div>
     </div>
   );
