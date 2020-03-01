@@ -1,6 +1,7 @@
 import React from "react";
 import { TRACK_TYPE } from "./TrackType";
 import { ITrack } from "./Tracks";
+import { Input } from "antd";
 
 export function TrackOptions({ track }: TrackOptionsProps) {
   let Component = componentFactory(track.type);
@@ -14,7 +15,7 @@ export function TrackOptions({ track }: TrackOptionsProps) {
 
 function componentFactory(type: keyof typeof TRACK_TYPE) {
   switch (type) {
-    case "VECTOR":
+    case TRACK_TYPE.vector:
       return VectorOptions;
     default:
       return VectorOptions;
@@ -22,7 +23,16 @@ function componentFactory(type: keyof typeof TRACK_TYPE) {
 }
 
 function VectorOptions({ track }: OptionsProps) {
-  return <div>THIS BE VECTOR</div>;
+  let { times, values } = track;
+
+  let timesValue = times.join(" ");
+  let valuesValue = values.join(" ");
+  return (
+    <div>
+      <Input value={timesValue} />
+      <Input value={valuesValue} />
+    </div>
+  );
 }
 
 interface OptionsProps {

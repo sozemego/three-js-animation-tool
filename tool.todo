@@ -1,0 +1,6 @@
+Functionality:
+  ☐ Working prototype for VECTOR type tracks
+  ☐ Name shoul also be selectable and be one of the properties that can be affected?
+  ☐ localStorage persistence
+  ☐ Export to JSON
+  ☐ Import from JSON

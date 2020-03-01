@@ -16,7 +16,7 @@ let initial = {
     {
       id: 1,
       name: ".scale",
-      type: TRACK_TYPE.VECTOR,
+      type: TRACK_TYPE.vector,
       times: [0, 1],
       values: [0, 0, 1, 1]
     }
@@ -37,7 +37,7 @@ export function Tracks({ setClips }: TracksProps) {
         let nextId = state.tracks.length + 1;
         state.tracks.push({
           name: `${nextId}`,
-          type: TRACK_TYPE.VECTOR,
+          type: TRACK_TYPE.vector,
           id: nextId,
           times: [],
           values: []
@@ -68,7 +68,7 @@ export function Tracks({ setClips }: TracksProps) {
       // console.error(e);
       setClips([]);
     }
-  }, [state]);
+  }, [state, setClips]);
 
   let { name, tracks } = state;
 
@@ -140,7 +140,7 @@ function Track({ track, dispatch }: TrackProps) {
       <div>
         <div>TYPE</div>
         <Select
-          defaultValue={TRACK_TYPE.VECTOR}
+          defaultValue={TRACK_TYPE.vector}
           value={type}
           style={{ width: "150px" }}
           onChange={value =>
