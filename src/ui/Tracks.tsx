@@ -4,7 +4,7 @@ import { Button, Col, Input, Row, Select } from "antd";
 import { Typography } from "antd";
 import produce from "immer";
 import { TRACK_TYPE } from "./TrackType";
-import { TrackOptions } from "./TrackOptions";
+import { TrackOptions, turnTimesIntoNumbers } from "./TrackOptions";
 
 let { Text } = Typography;
 let { Option } = Select;
@@ -17,8 +17,10 @@ let initial = {
       id: 1,
       name: ".scale",
       type: TRACK_TYPE.vector,
-      times: [0, 1],
-      values: [0, 0, 1, 1]
+      times: turnTimesIntoNumbers("0, 1"),
+      timesStr: "0, 1",
+      values: turnTimesIntoNumbers("0 0, 1 1"),
+      valuesStr: "0 0, 1 1"
     }
   ]
 };
@@ -155,7 +157,7 @@ function Track({ track, dispatch }: TrackProps) {
         </Select>
       </div>
       <div>
-        <TrackOptions track={track} />
+        <TrackOptions track={track} dispatch={dispatch} />
       </div>
     </div>
   );
@@ -166,7 +168,9 @@ export interface ITrack {
   name: string;
   type: keyof typeof TRACK_TYPE;
   times: number[];
+  timesStr: string;
   values: number[];
+  valuesStr: string;
 }
 
 interface TrackProps {
