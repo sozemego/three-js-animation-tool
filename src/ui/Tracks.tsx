@@ -4,7 +4,7 @@ import { Button, Col, Input, Row, Select } from "antd";
 import { Typography } from "antd";
 import produce from "immer";
 import { TRACK_TYPE } from "./TrackType";
-import { TrackOptions, turnTimesIntoNumbers } from "./TrackOptions";
+import { TrackOptions } from "./TrackOptions";
 
 let { Text } = Typography;
 let { Option } = Select;
@@ -16,7 +16,7 @@ let initial = {
     {
       id: 1,
       name: ".scale",
-      type: TRACK_TYPE.vector,
+      type: TRACK_TYPE.vector2,
       times: turnTimesIntoNumbers("0, 1"),
       timesStr: "0, 1",
       values: turnTimesIntoNumbers("0 0, 1 1"),
@@ -48,13 +48,42 @@ export function Tracks({ setClips }: TracksProps) {
       }
       case "track_name_change":
         {
-          let track = findTrackById(state.tracks, action.id);
-          track!.name = action.name;
+          let track = findTrackById(state.tracks, action.id)!;
+          track.name = action.name;
         }
         break;
       case "track_type_change": {
-        let track = findTrackById(state.tracks, action.id);
-        track!.type = action.nextType;
+        let track = findTrackById(state.tracks, action.id)!;
+        track.type = action.nextType;
+        break;
+      }
+      case "update_track_times": {
+        console.log(action);
+        let track = findTrackById(state.tracks, action.id)!;
+        track.timesStr = action.times;
+        let times = turnTimesIntoNumbers(track.timesStr);
+        let values = turnTimesIntoNumbers(track.valuesStr);
+        if (areTimesAndValuesValid(times, values, action.length)) {
+          console.log("valid");
+          track.times = times;
+          track.values = values;
+          state.duration = track.times[track.times.length - 1];
+        }
+        break;
+      }
+      case "update_track_values": {
+        let track = findTrackById(state.tracks, action.id)!;
+        track.valuesStr = action.values;
+        let times = turnTimesIntoNumbers(track.timesStr);
+        let values = turnTimesIntoNumbers(track.valuesStr);
+        if (areTimesAndValuesValid(times, values, action.length)) {
+          console.log("valid");
+          track.times = times;
+          track.values = values;
+          state.duration = track.times[track.times.length - 1];
+        }
+
+        break;
       }
     }
   });
@@ -176,4 +205,38 @@ export interface ITrack {
 interface TrackProps {
   dispatch: Dispatch<any>;
   track: ITrack;
+}
+
+export function turnTimesIntoNumbers(str: string): number[] {
+  let strings = str.split(/\D/gi);
+  return strings.filter(Boolean).map(Number);
+}
+
+export function turnNumbersIntoString(arr: number[], length: number) {
+  let str = "";
+  let counter = 0;
+  for (let i = 0; i < arr.length; i++) {
+    ++counter;
+    str += `${arr[i]}`;
+    if (counter !== length) {
+      str += " ";
+    } else {
+      str += ", ";
+      counter = 0;
+    }
+  }
+  str = str.trim();
+  if (str.charAt(str.length - 1) === ",") {
+    str = str.slice(0, str.length - 1);
+  }
+  return str.trim();
+}
+
+function areTimesAndValuesValid(
+  times: number[],
+  values: number[],
+  length: number
+) {
+  let valuePackets = values.length / length;
+  return valuePackets === times.length;
 }

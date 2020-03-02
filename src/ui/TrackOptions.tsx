@@ -23,19 +23,39 @@ function componentFactory(type: keyof typeof TRACK_TYPE) {
 }
 
 function VectorOptions({ track, dispatch }: OptionsProps) {
-  let { timesStr, valuesStr } = track;
+  let { id, type, timesStr, valuesStr } = track;
+
+  let length = 1;
+  let lastChar = type.charAt(type.length - 1);
+  let isDigit = /\d/gi.exec(lastChar);
+  if (isDigit) {
+    length = Number(lastChar);
+  }
 
   return (
     <div>
       <Input
         value={timesStr}
         onChange={e => {
-          dispatch({});
-          let array = turnTimesIntoNumbers(e.target.value);
-          console.log(array);
+          dispatch({
+            type: "update_track_times",
+            id,
+            times: e.target.value,
+            length
+          });
         }}
       />
-      <Input value={valuesStr} />
+      <Input
+        value={valuesStr}
+        onChange={e => {
+          dispatch({
+            type: "update_track_values",
+            id,
+            values: e.target.value,
+            length
+          });
+        }}
+      />
     </div>
   );
 }
@@ -48,29 +68,4 @@ interface OptionsProps {
 interface TrackOptionsProps {
   track: ITrack;
   dispatch: Dispatch<any>;
-}
-
-export function turnTimesIntoNumbers(str: string): number[] {
-  let strings = str.split(/\D/gi);
-  return strings.filter(Boolean).map(Number);
-}
-
-export function turnNumbersIntoString(arr: number[], length: number) {
-  let str = "";
-  let counter = 0;
-  for (let i = 0; i < arr.length; i++) {
-    ++counter;
-    str += `${arr[i]}`;
-    if (counter !== length) {
-      str += " ";
-    } else {
-      str += ", ";
-      counter = 0;
-    }
-  }
-  str = str.trim();
-  if (str.charAt(str.length - 1) === ",") {
-    str = str.slice(0, str.length - 1);
-  }
-  return str.trim();
 }

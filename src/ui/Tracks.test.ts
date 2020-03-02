@@ -1,4 +1,4 @@
-import { turnNumbersIntoString, turnTimesIntoNumbers } from "./TrackOptions";
+import { turnNumbersIntoString, turnTimesIntoNumbers } from "./Tracks";
 
 describe("turnNumbersIntoString", () => {
   it("should turn numbers with length one into string", () => {
