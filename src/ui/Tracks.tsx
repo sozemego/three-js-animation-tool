@@ -30,6 +30,16 @@ export function Tracks({ setClips }: TracksProps) {
     return tracks.find(track => track.id === id);
   }
 
+  function updateTimes(track: ITrack, length: number) {
+    let times = turnTimesIntoNumbers(track.timesStr);
+    let values = turnTimesIntoNumbers(track.valuesStr);
+    if (areTimesAndValuesValid(times, values, length)) {
+      track.times = times;
+      track.values = values;
+      state.duration = track.times[track.times.length - 1];
+    }
+  }
+
   let reducer = produce((state, action) => {
     switch (action.type) {
       case "name":
@@ -46,43 +56,26 @@ export function Tracks({ setClips }: TracksProps) {
         });
         break;
       }
-      case "track_name_change":
-        {
-          let track = findTrackById(state.tracks, action.id)!;
-          track.name = action.name;
-        }
+      case "track_name_change": {
+        let track = findTrackById(state.tracks, action.id)!;
+        track.name = action.name;
         break;
+      }
       case "track_type_change": {
         let track = findTrackById(state.tracks, action.id)!;
         track.type = action.nextType;
         break;
       }
       case "update_track_times": {
-        console.log(action);
         let track = findTrackById(state.tracks, action.id)!;
         track.timesStr = action.times;
-        let times = turnTimesIntoNumbers(track.timesStr);
-        let values = turnTimesIntoNumbers(track.valuesStr);
-        if (areTimesAndValuesValid(times, values, action.length)) {
-          console.log("valid");
-          track.times = times;
-          track.values = values;
-          state.duration = track.times[track.times.length - 1];
-        }
+        updateTimes(track, action.length);
         break;
       }
       case "update_track_values": {
         let track = findTrackById(state.tracks, action.id)!;
         track.valuesStr = action.values;
-        let times = turnTimesIntoNumbers(track.timesStr);
-        let values = turnTimesIntoNumbers(track.valuesStr);
-        if (areTimesAndValuesValid(times, values, action.length)) {
-          console.log("valid");
-          track.times = times;
-          track.values = values;
-          state.duration = track.times[track.times.length - 1];
-        }
-
+        updateTimes(track, action.length);
         break;
       }
     }
