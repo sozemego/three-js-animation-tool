@@ -16,9 +16,10 @@ let initial = {
     {
       id: 1,
       name: ".scale",
-      type: TRACK_TYPE.vector2,
+      type: TRACK_TYPE.vector,
       timesStr: "0, 1",
-      valuesStr: "0 0, 1 1"
+      valuesStr: "0 0, 1 1",
+      length: 2
     }
   ]
 };
@@ -54,6 +55,7 @@ export function Tracks({ setClips }: TracksProps) {
         track.type = action.nextType;
         track.valuesStr = "";
         track.timesStr = "";
+        track.length = getLength(action.nextType);
         break;
       }
       case "update_track_times": {
@@ -81,8 +83,7 @@ export function Tracks({ setClips }: TracksProps) {
         let track = tracks[i];
         let times = turnTimesIntoNumbers(track.timesStr);
         let values = turnTimesIntoNumbers(track.valuesStr);
-        let length = getLength(track.type);
-        if (areTimesAndValuesValid(times, values, length)) {
+        if (areTimesAndValuesValid(times, values, track.length)) {
           track.times = times;
           track.values = values;
           track.duration = times[times.length - 1];
@@ -190,6 +191,7 @@ function Track({ track, dispatch }: TrackProps) {
 export interface ITrack {
   id: number;
   name: string;
+  length: number;
   type: keyof typeof TRACK_TYPE;
   times: number[];
   timesStr: string;
@@ -239,9 +241,6 @@ function areTimesAndValuesValid(
 function getLength(type: keyof typeof TRACK_TYPE): number {
   return {
     [TRACK_TYPE.vector]: 1,
-    [TRACK_TYPE.vector2]: 2,
-    [TRACK_TYPE.vector3]: 3,
-    [TRACK_TYPE.vector4]: 4,
     [TRACK_TYPE.number]: 1,
     [TRACK_TYPE.quaternion]: 4,
     [TRACK_TYPE.color]: 1,

@@ -15,14 +15,16 @@ export function TrackOptions({ track, dispatch }: TrackOptionsProps) {
 
 function componentFactory(type: keyof typeof TRACK_TYPE) {
   switch (type) {
+    case TRACK_TYPE.number:
     case TRACK_TYPE.vector:
-      return VectorOptions;
+    case TRACK_TYPE.quaternion:
+      return NumericOptions;
     default:
-      return VectorOptions;
+      return NumericOptions;
   }
 }
 
-function VectorOptions({ track, dispatch }: OptionsProps) {
+function NumericOptions({ track, dispatch }: OptionsProps) {
   let { id, timesStr, valuesStr } = track;
 
   return (
