@@ -25,10 +25,26 @@ function componentFactory(type: keyof typeof TRACK_TYPE) {
 }
 
 function NumericOptions({ track, dispatch }: OptionsProps) {
-  let { id, timesStr, valuesStr } = track;
+  let { id, timesStr, type, valuesStr, length } = track;
 
   return (
     <div>
+      {type === TRACK_TYPE.vector && (
+        <Input
+          value={length}
+          type={"number"}
+          placeholder={"Length"}
+          min={1}
+          max={4}
+          onChange={e => {
+            dispatch({
+              type: "update_track_length",
+              id,
+              length: Number(e.target.value)
+            });
+          }}
+        />
+      )}
       <Input
         value={timesStr}
         onChange={e => {

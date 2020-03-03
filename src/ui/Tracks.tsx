@@ -58,6 +58,13 @@ export function Tracks({ setClips }: TracksProps) {
         track.length = getLength(action.nextType);
         break;
       }
+      case "update_track_length": {
+        let track = findTrackById(state.tracks, action.id)!;
+        track.length = action.length;
+        let values = turnTimesIntoNumbers(track.valuesStr);
+        track.valuesStr = turnNumbersIntoString(values, action.length);
+        break;
+      }
       case "update_track_times": {
         let track = findTrackById(state.tracks, action.id)!;
         track.timesStr = action.times;
