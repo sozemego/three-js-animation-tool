@@ -1,6 +1,14 @@
 Functionality:
-  ☐ Working prototype for VECTOR type tracks
-  ☐ Name shoul also be selectable and be one of the properties that can be affected?
   ☐ localStorage persistence
   ☐ Export to JSON
   ☐ Import from JSON
+  ✔ Working Vector @done (20-03-03 19:06)
+  ✔ Working Vector2 @done (20-03-03 19:06)
+  ✔ Working Vector3 @done (20-03-03 19:06)
+  ✔ Working Vector4 @done (20-03-03 19:06)
+  ☐ Working number
+  ☐ Working color
+  ☐ Working quaternion
+  ☐ Working boolean
+  ☐ Working string
+  ☐ Have clip per texture (ability to set different clip for different texture)

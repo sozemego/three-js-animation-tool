@@ -17,9 +17,7 @@ let initial = {
       id: 1,
       name: ".scale",
       type: TRACK_TYPE.vector2,
-      times: turnTimesIntoNumbers("0, 1"),
       timesStr: "0, 1",
-      values: turnTimesIntoNumbers("0 0, 1 1"),
       valuesStr: "0 0, 1 1"
     }
   ]
@@ -28,16 +26,6 @@ let initial = {
 export function Tracks({ setClips }: TracksProps) {
   function findTrackById(tracks: ITrack[], id: number) {
     return tracks.find(track => track.id === id);
-  }
-
-  function updateTimes(track: ITrack, length: number) {
-    let times = turnTimesIntoNumbers(track.timesStr);
-    let values = turnTimesIntoNumbers(track.valuesStr);
-    if (areTimesAndValuesValid(times, values, length)) {
-      track.times = times;
-      track.values = values;
-      state.duration = track.times[track.times.length - 1];
-    }
   }
 
   let reducer = produce((state, action) => {
@@ -64,18 +52,18 @@ export function Tracks({ setClips }: TracksProps) {
       case "track_type_change": {
         let track = findTrackById(state.tracks, action.id)!;
         track.type = action.nextType;
+        track.valuesStr = "";
+        track.timesStr = "";
         break;
       }
       case "update_track_times": {
         let track = findTrackById(state.tracks, action.id)!;
         track.timesStr = action.times;
-        updateTimes(track, action.length);
         break;
       }
       case "update_track_values": {
         let track = findTrackById(state.tracks, action.id)!;
         track.valuesStr = action.values;
-        updateTimes(track, action.length);
         break;
       }
     }
@@ -85,11 +73,25 @@ export function Tracks({ setClips }: TracksProps) {
 
   useEffect(() => {
     try {
-      let clips = new AnimationLoader().parse([state]);
-      console.log(clips);
+      let copy = JSON.parse(JSON.stringify(state));
+
+      let { tracks } = copy;
+
+      for (let i = 0; i < tracks.length; i++) {
+        let track = tracks[i];
+        let times = turnTimesIntoNumbers(track.timesStr);
+        let values = turnTimesIntoNumbers(track.valuesStr);
+        let length = getLength(track.type);
+        if (areTimesAndValuesValid(times, values, length)) {
+          track.times = times;
+          track.values = values;
+          track.duration = times[times.length - 1];
+        }
+      }
+
+      let clips = new AnimationLoader().parse([copy]);
       setClips(clips);
     } catch (e) {
-      // console.error(e);
       setClips([]);
     }
   }, [state, setClips]);
@@ -232,4 +234,18 @@ function areTimesAndValuesValid(
 ) {
   let valuePackets = values.length / length;
   return valuePackets === times.length;
+}
+
+function getLength(type: keyof typeof TRACK_TYPE): number {
+  return {
+    [TRACK_TYPE.vector]: 1,
+    [TRACK_TYPE.vector2]: 2,
+    [TRACK_TYPE.vector3]: 3,
+    [TRACK_TYPE.vector4]: 4,
+    [TRACK_TYPE.number]: 1,
+    [TRACK_TYPE.quaternion]: 4,
+    [TRACK_TYPE.color]: 1,
+    [TRACK_TYPE.boolean]: 1,
+    [TRACK_TYPE.string]: 1
+  }[type];
 }

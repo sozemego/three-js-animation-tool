@@ -23,14 +23,7 @@ function componentFactory(type: keyof typeof TRACK_TYPE) {
 }
 
 function VectorOptions({ track, dispatch }: OptionsProps) {
-  let { id, type, timesStr, valuesStr } = track;
-
-  let length = 1;
-  let lastChar = type.charAt(type.length - 1);
-  let isDigit = /\d/gi.exec(lastChar);
-  if (isDigit) {
-    length = Number(lastChar);
-  }
+  let { id, timesStr, valuesStr } = track;
 
   return (
     <div>
@@ -40,8 +33,7 @@ function VectorOptions({ track, dispatch }: OptionsProps) {
           dispatch({
             type: "update_track_times",
             id,
-            times: e.target.value,
-            length
+            times: e.target.value
           });
         }}
       />
@@ -51,8 +43,7 @@ function VectorOptions({ track, dispatch }: OptionsProps) {
           dispatch({
             type: "update_track_values",
             id,
-            values: e.target.value,
-            length
+            values: e.target.value
           });
         }}
       />
