@@ -2,14 +2,16 @@ import React, { Dispatch, useEffect } from "react";
 import { AnimationClip, AnimationLoader } from "three";
 import { Button, Col, Input, Row, Select } from "antd";
 import { Typography } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 import produce from "immer";
 import { TRACK_TYPE } from "./TrackType";
 import { TrackOptions } from "./TrackOptions";
+import { getFromLocalStorage, persistToLocalStorage } from "./LocalStorage";
 
 let { Text } = Typography;
 let { Option } = Select;
 
-let initial = {
+let defaultState = {
   name: "Hello",
   duration: 1,
   tracks: [
@@ -24,6 +26,8 @@ let initial = {
   ]
 };
 
+let initial = getFromLocalStorage(defaultState);
+
 export function Tracks({ setClips }: TracksProps) {
   function findTrackById(tracks: ITrack[], id: number) {
     return tracks.find(track => track.id === id);
@@ -31,6 +35,9 @@ export function Tracks({ setClips }: TracksProps) {
 
   let reducer = produce((state, action) => {
     switch (action.type) {
+      case "reset": {
+        return defaultState;
+      }
       case "name":
         state.name = action.name;
         break;
@@ -76,6 +83,7 @@ export function Tracks({ setClips }: TracksProps) {
         break;
       }
     }
+    persistToLocalStorage(state);
   });
 
   let [state, dispatch] = React.useReducer(reducer, initial);
@@ -115,11 +123,21 @@ export function Tracks({ setClips }: TracksProps) {
 
   return (
     <div style={{ padding: "6px" }}>
-      <Input
-        placeholder={"name"}
-        value={name}
-        onChange={e => dispatch({ type: "name", name: e.target.value })}
-      />
+      <Row align={"middle"} justify={"space-between"}>
+        <Col>
+          <Input
+            placeholder={"name"}
+            value={name}
+            onChange={e => dispatch({ type: "name", name: e.target.value })}
+          />
+        </Col>
+        <Col>
+          <DeleteOutlined
+            style={{ cursor: "pointer" }}
+            onClick={() => dispatch({ type: "reset" })}
+          />
+        </Col>
+      </Row>
       <div style={{ height: "12px" }} />
       <Row align={"middle"} justify={"space-between"}>
         <Col>
