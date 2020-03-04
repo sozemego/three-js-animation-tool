@@ -2,7 +2,11 @@ import React, { Dispatch, useEffect } from "react";
 import { AnimationClip, AnimationLoader } from "three";
 import { Button, Col, Input, Row, Select } from "antd";
 import { Typography } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined
+} from "@ant-design/icons";
 import produce from "immer";
 import { TRACK_TYPE } from "./TrackType";
 import { TrackOptions } from "./TrackOptions";
@@ -21,7 +25,8 @@ let defaultState = {
       type: TRACK_TYPE.vector,
       timesStr: "0, 1",
       valuesStr: "0 0, 1 1",
-      length: 2
+      length: 2,
+      hidden: false
     }
   ]
 };
@@ -51,6 +56,11 @@ export function Tracks({ setClips }: TracksProps) {
           values: [],
           length: 2
         });
+        break;
+      }
+      case "toggle_track_visibility": {
+        let track = findTrackById(state.tracks, action.id)!;
+        track.hidden = !track.hidden;
         break;
       }
       case "track_name_change": {
@@ -94,6 +104,8 @@ export function Tracks({ setClips }: TracksProps) {
       let copy = JSON.parse(JSON.stringify(state));
 
       let { tracks } = copy;
+      tracks = tracks.filter((track: ITrack) => !track.hidden);
+      copy.tracks = tracks;
 
       let largestTime = Number.MIN_SAFE_INTEGER;
 
@@ -184,11 +196,23 @@ interface TrackListProps {
 }
 
 function Track({ track, dispatch }: TrackProps) {
-  let { id, name, type } = track;
+  let { id, name, type, hidden } = track;
   return (
     <div>
       <div>
-        <div>NAME</div>
+        <Row justify={"space-between"} align={"middle"}>
+          <span>NAME</span>
+          {!hidden && (
+            <EyeOutlined
+              onClick={() => dispatch({ type: "toggle_track_visibility", id })}
+            />
+          )}
+          {hidden && (
+            <EyeInvisibleOutlined
+              onClick={() => dispatch({ type: "toggle_track_visibility", id })}
+            />
+          )}
+        </Row>
         <Input
           placeholder={"name"}
           value={name}
@@ -197,26 +221,26 @@ function Track({ track, dispatch }: TrackProps) {
           }
         />
       </div>
-      <div>
-        <div>TYPE</div>
-        <Select
-          defaultValue={TRACK_TYPE.vector}
-          value={type}
-          style={{ width: "150px" }}
-          onChange={value =>
-            dispatch({ type: "track_type_change", nextType: value, id })
-          }
-        >
-          {Object.values(TRACK_TYPE).map(type => (
-            <Option key={type} value={type}>
-              {type}
-            </Option>
-          ))}
-        </Select>
-      </div>
-      <div>
-        <TrackOptions track={track} dispatch={dispatch} />
-      </div>
+      {!hidden && (
+        <div>
+          <div>TYPE</div>
+          <Select
+            defaultValue={TRACK_TYPE.vector}
+            value={type}
+            style={{ width: "150px" }}
+            onChange={value =>
+              dispatch({ type: "track_type_change", nextType: value, id })
+            }
+          >
+            {Object.values(TRACK_TYPE).map(type => (
+              <Option key={type} value={type}>
+                {type}
+              </Option>
+            ))}
+          </Select>
+        </div>
+      )}
+      {!hidden && <TrackOptions track={track} dispatch={dispatch} />}
     </div>
   );
 }
@@ -230,6 +254,7 @@ export interface ITrack {
   timesStr: string;
   values: number[];
   valuesStr: string;
+  hidden: boolean;
 }
 
 interface TrackProps {
@@ -238,6 +263,9 @@ interface TrackProps {
 }
 
 export function turnTimesIntoNumbers(str: string): number[] {
+  if (!str) {
+    return [];
+  }
   let strings = str.split(/,|\s/gi);
   return strings.filter(Boolean).map(Number);
 }
