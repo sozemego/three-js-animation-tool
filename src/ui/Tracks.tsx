@@ -72,7 +72,7 @@ export function Tracks({ setClips }: TracksProps) {
       }
       case "update_track_values": {
         let track = findTrackById(state.tracks, action.id)!;
-        track.valuesStr = action.values;
+        track.valuesStr = stripValues(action.values);
         break;
       }
     }
@@ -86,6 +86,8 @@ export function Tracks({ setClips }: TracksProps) {
 
       let { tracks } = copy;
 
+      let largestTime = Number.MIN_SAFE_INTEGER;
+
       for (let i = 0; i < tracks.length; i++) {
         let track = tracks[i];
         let times = turnTimesIntoNumbers(track.timesStr);
@@ -93,9 +95,14 @@ export function Tracks({ setClips }: TracksProps) {
         if (areTimesAndValuesValid(times, values, track.length)) {
           track.times = times;
           track.values = values;
-          track.duration = times[times.length - 1];
+          let trackDuration = times[times.length - 1];
+          if (trackDuration >= largestTime) {
+            largestTime = trackDuration;
+          }
         }
       }
+
+      copy.duration = largestTime;
 
       let clips = new AnimationLoader().parse([copy]);
       setClips(clips);
@@ -212,7 +219,7 @@ interface TrackProps {
 }
 
 export function turnTimesIntoNumbers(str: string): number[] {
-  let strings = str.split(/\D/gi);
+  let strings = str.split(/,|\s/gi);
   return strings.filter(Boolean).map(Number);
 }
 
@@ -243,6 +250,21 @@ function areTimesAndValuesValid(
 ) {
   let valuePackets = values.length / length;
   return valuePackets === times.length;
+}
+
+/**
+ * Removes all non digits and non periods from this string
+ * @param str
+ */
+export function stripValues(str: string): string {
+  let result = "";
+  for (let i = 0; i < str.length; i++) {
+    let char = str.charAt(i);
+    if (char === "." || char === "," || char === " " || char.match(/\d/gi)) {
+      result += char;
+    }
+  }
+  return result;
 }
 
 function getLength(type: keyof typeof TRACK_TYPE): number {
