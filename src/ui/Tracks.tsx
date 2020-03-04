@@ -48,7 +48,8 @@ export function Tracks({ setClips }: TracksProps) {
           type: TRACK_TYPE.vector,
           id: nextId,
           times: [],
-          values: []
+          values: [],
+          length: 2
         });
         break;
       }
