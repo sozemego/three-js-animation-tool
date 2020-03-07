@@ -1,5 +1,5 @@
 Functionality:
-  ☐ localStorage persistence
+  ✔ localStorage persistence @done (20-03-07 20:30)
   ☐ Export to JSON
   ☐ Import from JSON
   ✔ Working Vector @done (20-03-03 19:06)

@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { AnimationClip, AnimationMixer, Texture, TextureLoader } from "three";
+import {
+  AnimationClip,
+  AnimationMixer,
+  Mesh,
+  Texture,
+  TextureLoader
+} from "three";
 import { useFrame } from "react-three-fiber";
 
 export function Textures({ clips }: TexturesProps) {
@@ -36,7 +42,7 @@ interface TexturesProps {
 }
 
 function TextureComponent({ texture, offset, clips }: TextureComponentProps) {
-  let mesh = useRef();
+  let mesh = useRef<Mesh>();
 
   let [mixer, setMixer] = useState<AnimationMixer>();
 

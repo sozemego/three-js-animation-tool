@@ -19,6 +19,8 @@ function componentFactory(type: keyof typeof TRACK_TYPE) {
     case TRACK_TYPE.vector:
     case TRACK_TYPE.quaternion:
       return NumericOptions;
+    case TRACK_TYPE.color:
+      return ColorOptions;
     default:
       return NumericOptions;
   }
@@ -45,6 +47,35 @@ function NumericOptions({ track, dispatch }: OptionsProps) {
           }}
         />
       )}
+      <Input
+        value={timesStr}
+        onChange={e => {
+          dispatch({
+            type: "update_track_times",
+            id,
+            times: e.target.value
+          });
+        }}
+      />
+      <Input
+        value={valuesStr}
+        onChange={e => {
+          dispatch({
+            type: "update_track_values",
+            id,
+            values: e.target.value
+          });
+        }}
+      />
+    </div>
+  );
+}
+
+function ColorOptions({ track, dispatch }: OptionsProps) {
+  let { id, timesStr, valuesStr } = track;
+
+  return (
+    <div>
       <Input
         value={timesStr}
         onChange={e => {

@@ -90,7 +90,15 @@ export function Tracks({ setClips }: TracksProps) {
       }
       case "update_track_values": {
         let track = findTrackById(state.tracks, action.id)!;
-        track.valuesStr = stripValues(action.values);
+        if (
+          track.type === TRACK_TYPE.number ||
+          track.type === TRACK_TYPE.vector
+        ) {
+          track.valuesStr = stripValues(action.values);
+        } else {
+          track.valuesStr = action.values;
+        }
+
         break;
       }
     }
@@ -111,15 +119,12 @@ export function Tracks({ setClips }: TracksProps) {
 
       for (let i = 0; i < tracks.length; i++) {
         let track = tracks[i];
-        let times = turnTimesIntoNumbers(track.timesStr);
-        let values = turnTimesIntoNumbers(track.valuesStr);
-        if (areTimesAndValuesValid(times, values, track.length)) {
-          track.times = times;
-          track.values = values;
-          let trackDuration = times[times.length - 1];
-          if (trackDuration >= largestTime) {
-            largestTime = trackDuration;
-          }
+        let [times, values] = getTimesAndNumbers(track);
+        track.times = times;
+        track.values = values;
+        let trackDuration = times[times.length - 1];
+        if (trackDuration >= largestTime) {
+          largestTime = trackDuration;
         }
       }
 
@@ -270,6 +275,28 @@ export function turnTimesIntoNumbers(str: string): number[] {
   return strings.filter(Boolean).map(Number);
 }
 
+export function turnValuesIntoColors(str: string): number[] {
+  if (!str) {
+    return [];
+  }
+
+  let strings = str.split(/,|\s/gi);
+  return strings
+    .filter(Boolean)
+    .map(turnStringIntoColor)
+    .filter(number => number !== null) as number[];
+}
+
+function turnStringIntoColor(str: string): number | null {
+  if (!str) {
+    return null;
+  }
+  if (str.startsWith("0x")) {
+    return parseInt(str, 16);
+  }
+  return null;
+}
+
 export function turnNumbersIntoString(arr: number[], length: number) {
   let str = "";
   let counter = 0;
@@ -292,7 +319,7 @@ export function turnNumbersIntoString(arr: number[], length: number) {
 
 function areTimesAndValuesValid(
   times: number[],
-  values: number[],
+  values: any[],
   length: number
 ) {
   let valuePackets = values.length / length;
@@ -323,4 +350,23 @@ function getLength(type: keyof typeof TRACK_TYPE): number {
     [TRACK_TYPE.boolean]: 1,
     [TRACK_TYPE.string]: 1
   }[type];
+}
+
+function getTimesAndNumbers(track: ITrack): [number[], any[]] {
+  let times = turnTimesIntoNumbers(track.timesStr);
+  if (track.type === TRACK_TYPE.vector || track.type === TRACK_TYPE.number) {
+    let values = turnTimesIntoNumbers(track.valuesStr);
+    if (areTimesAndValuesValid(times, values, track.length)) {
+      return [times, values];
+    }
+  }
+
+  if (track.type === TRACK_TYPE.color) {
+    let values = turnValuesIntoColors(track.valuesStr);
+    if (areTimesAndValuesValid(times, values, 1)) {
+      return [times, values];
+    }
+  }
+
+  return [[], []];
 }
