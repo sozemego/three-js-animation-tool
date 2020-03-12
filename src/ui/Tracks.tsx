@@ -294,7 +294,7 @@ function turnStringIntoColor(str: string): number | null {
   if (str.startsWith("0x")) {
     return parseInt(str, 16);
   }
-  return null;
+  return Number(str);
 }
 
 export function turnNumbersIntoString(arr: number[], length: number) {
@@ -363,7 +363,7 @@ function getTimesAndNumbers(track: ITrack): [number[], any[]] {
 
   if (track.type === TRACK_TYPE.color) {
     let values = turnValuesIntoColors(track.valuesStr);
-    if (areTimesAndValuesValid(times, values, 1)) {
+    if (areTimesAndValuesValid(times, values, 3)) {
       return [times, values];
     }
   }
