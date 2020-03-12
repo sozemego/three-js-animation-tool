@@ -275,6 +275,14 @@ export function turnTimesIntoNumbers(str: string): number[] {
   return strings.filter(Boolean).map(Number);
 }
 
+export function turnTimesIntoBooleans(str: string): boolean[] {
+  if (!str) {
+    return [];
+  }
+  let strings = str.split(/,|\s/gi);
+  return strings.filter(Boolean).map(time => time === "true");
+}
+
 export function turnValuesIntoColors(str: string): number[] {
   if (!str) {
     return [];
@@ -346,7 +354,7 @@ function getLength(type: keyof typeof TRACK_TYPE): number {
     [TRACK_TYPE.vector]: 1,
     [TRACK_TYPE.number]: 1,
     [TRACK_TYPE.quaternion]: 4,
-    [TRACK_TYPE.color]: 1,
+    [TRACK_TYPE.color]: 3,
     [TRACK_TYPE.boolean]: 1,
     [TRACK_TYPE.string]: 1
   }[type];
@@ -363,7 +371,14 @@ function getTimesAndNumbers(track: ITrack): [number[], any[]] {
 
   if (track.type === TRACK_TYPE.color) {
     let values = turnValuesIntoColors(track.valuesStr);
-    if (areTimesAndValuesValid(times, values, 3)) {
+    if (areTimesAndValuesValid(times, values, getLength(track.type))) {
+      return [times, values];
+    }
+  }
+
+  if (track.type === TRACK_TYPE.boolean) {
+    let values = turnTimesIntoBooleans(track.valuesStr);
+    if (areTimesAndValuesValid(times, values, getLength(track.type))) {
       return [times, values];
     }
   }

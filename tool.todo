@@ -9,10 +9,11 @@ Functionality:
   ✔ Working number @done (20-03-03 20:24)
   ✔ Working quaternion @done (20-03-03 20:24)
   ✔ Working color @done (20-03-12 20:35)
-  ☐ Working boolean
+  ✔ Working boolean @done (20-03-12 21:14)
   ☐ Working string
   ☐ Have clip per texture (ability to set different clip for different texture)
   ☐ Presets
+  ☐ Different interpolations
 
 Colors:
   ✔ Colors now work with simple numbers (e.g. 0 0 0, 1 1 1, 0 0 0) @done (20-03-12 20:37)
