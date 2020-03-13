@@ -355,14 +355,17 @@ function getLength(type: keyof typeof TRACK_TYPE): number {
     [TRACK_TYPE.number]: 1,
     [TRACK_TYPE.quaternion]: 4,
     [TRACK_TYPE.color]: 3,
-    [TRACK_TYPE.boolean]: 1,
-    [TRACK_TYPE.string]: 1
+    [TRACK_TYPE.boolean]: 1
   }[type];
 }
 
 function getTimesAndNumbers(track: ITrack): [number[], any[]] {
   let times = turnTimesIntoNumbers(track.timesStr);
-  if (track.type === TRACK_TYPE.vector || track.type === TRACK_TYPE.number) {
+  if (
+    track.type === TRACK_TYPE.vector ||
+    track.type === TRACK_TYPE.number ||
+    track.type === TRACK_TYPE.quaternion
+  ) {
     let values = turnTimesIntoNumbers(track.valuesStr);
     if (areTimesAndValuesValid(times, values, track.length)) {
       return [times, values];

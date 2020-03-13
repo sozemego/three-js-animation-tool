@@ -7,10 +7,10 @@ Functionality:
   ✔ Working Vector3 @done (20-03-03 19:06)
   ✔ Working Vector4 @done (20-03-03 19:06)
   ✔ Working number @done (20-03-03 20:24)
-  ✔ Working quaternion @done (20-03-03 20:24)
+  ✔ Working quaternion @done (20-03-13 20:41)
   ✔ Working color @done (20-03-12 20:35)
   ✔ Working boolean @done (20-03-12 21:14)
-  ☐ Working string
+  ✘ Working string @cancelled (20-03-13 20:20)
   ☐ Have clip per texture (ability to set different clip for different texture)
   ☐ Presets
   ☐ Different interpolations

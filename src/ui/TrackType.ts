@@ -3,6 +3,5 @@ export const TRACK_TYPE = {
   vector: "vector",
   color: "color",
   quaternion: "quaternion",
-  boolean: "boolean",
-  string: "string"
+  boolean: "boolean"
 };
