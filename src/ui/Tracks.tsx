@@ -1,5 +1,5 @@
 import React, { Dispatch, useEffect } from "react";
-import { AnimationClip, AnimationLoader } from "three";
+import { AnimationClip, AnimationLoader, Color } from "three";
 import { Button, Col, Input, Row, Select } from "antd";
 import { Typography } from "antd";
 import {
@@ -289,20 +289,41 @@ export function turnValuesIntoColors(str: string): number[] {
   }
 
   let strings = str.split(/,|\s/gi);
-  return strings
-    .filter(Boolean)
-    .map(turnStringIntoColor)
-    .filter(number => number !== null) as number[];
+  let colors: number[] = [];
+
+  for (let string of strings) {
+    if (!Boolean(string)) {
+      continue;
+    }
+    colors = [...colors, ...turnStringIntoColor(string)];
+  }
+
+  return colors;
 }
 
-function turnStringIntoColor(str: string): number | null {
+function turnStringIntoColor(str: string): number[] {
   if (!str) {
-    return null;
+    return [];
   }
   if (str.startsWith("0x")) {
-    return parseInt(str, 16);
+    let number = Number(str);
+    let threeColor = new Color(number);
+    return [threeColor.r, threeColor.g, threeColor.b];
   }
-  return Number(str);
+  if (str.startsWith("#")) {
+    let hexes = str.slice(1);
+    let completeHexes = "#" + hexes + "000000".slice(hexes.length);
+    return turnStringIntoColor(completeHexes.replace("#", "0x"));
+  }
+  if (str.charAt(0).match(/[a-zA-Z]/gi)) {
+    let color = Color.NAMES[str];
+    if (!color) {
+      return [];
+    }
+    let threeColor = new Color(color);
+    return [threeColor.r, threeColor.g, threeColor.b];
+  }
+  return [Number(str)];
 }
 
 export function turnNumbersIntoString(arr: number[], length: number) {
